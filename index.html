@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="description" content="Aplikasi Arisan Digital dengan sistem kocok bulanan" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ArisanKu" />
+  <title>ArisanKu – Arisan Digital</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- SPLASH / CONFIG SCREEN -->
+  <div id="splash-screen" class="screen active">
+    <div class="splash-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="splash-content">
+      <div class="logo-wrap">
+        <div class="logo-icon">🪙</div>
+        <h1 class="logo-title">ArisanKu</h1>
+        <p class="logo-sub">Arisan Digital Modern</p>
+      </div>
+      <div class="config-card" id="config-card">
+        <h2>Konfigurasi Supabase</h2>
+        <p class="config-desc">Masukkan kredensial Supabase Anda untuk memulai</p>
+        <div class="form-group">
+          <label>Supabase URL</label>
+          <input type="url" id="sb-url" placeholder="https://xxxx.supabase.co" />
+        </div>
+        <div class="form-group">
+          <label>Anon Key</label>
+          <input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5c..." />
+        </div>
+        <button class="btn-primary" id="btn-connect">
+          <span>Hubungkan Database</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div id="connect-status" class="connect-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app-screen" class="screen">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <span class="header-logo">🪙</span>
+        <div>
+          <div class="header-title">ArisanKu</div>
+          <div class="header-sub" id="header-group-name">Pilih Grup</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="btn-icon" id="btn-add-group" title="Buat Grup Baru">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button class="btn-icon" id="btn-settings" title="Pengaturan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M12 2v2M4.93 4.93l1.41 1.41M2 12h2M4.93 19.07l1.41-1.41M12 20v2M19.07 19.07l-1.41-1.41M22 12h-2"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Nav Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="tab-btn" data-tab="members">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Anggota
+      </button>
+      <button class="tab-btn" data-tab="payments">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Pembayaran
+      </button>
+      <button class="tab-btn" data-tab="history">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        Riwayat
+      </button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main class="tab-content">
+
+      <!-- DASHBOARD TAB -->
+      <div class="tab-pane active" id="tab-dashboard">
+        <!-- Group Selector -->
+        <div class="section">
+          <div class="section-header">
+            <h3>Grup Arisan</h3>
+          </div>
+          <div id="group-list" class="group-list">
+            <div class="empty-state">
+              <div class="empty-icon">🏦</div>
+              <p>Belum ada grup arisan</p>
+              <button class="btn-sm" onclick="document.getElementById('btn-add-group').click()">Buat Grup</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="stats-section" style="display:none">
+          <div class="stat-card primary">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-label">Total Dana</div>
+              <div class="stat-value" id="stat-total">Rp 0</div>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-label">Lunas Bulan Ini</div>
+              <div class="stat-value" id="stat-paid">0/0</div>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">📅</div>
+            <div class="stat-info">
+              <div class="stat-label">Putaran Ke</div>
+              <div class="stat-value" id="stat-round">0</div>
+            </div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-info">
+              <div class="stat-label">Pemenang Terakhir</div>
+              <div class="stat-value" id="stat-winner">–</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kocok Section -->
+        <div id="kocok-section" class="section" style="display:none">
+          <div class="kocok-card">
+            <div class="kocok-header">
+              <h3>🎰 Kocok Arisan</h3>
+              <span class="badge" id="kocok-month-badge">Bulan Ini</span>
+            </div>
+            <p class="kocok-desc" id="kocok-desc">Klik tombol untuk mengundi pemenang bulan ini</p>
+            <div class="drum-container" id="drum-container">
+              <div class="drum" id="drum">
+                <div class="drum-inner" id="drum-inner">🎲</div>
+              </div>
+            </div>
+            <button class="btn-kocok" id="btn-kocok">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              Kocok Sekarang
+            </button>
+            <div id="winner-result" class="winner-result" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEMBERS TAB -->
+      <div class="tab-pane" id="tab-members">
+        <div class="section">
+          <div class="section-header">
+            <h3>Daftar Anggota</h3>
+            <button class="btn-sm" id="btn-add-member">+ Tambah</button>
+          </div>
+          <div id="member-list" class="member-list">
+            <div class="empty-state">
+              <div class="empty-icon">👥</div>
+              <p>Pilih grup terlebih dahulu</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS TAB -->
+      <div class="tab-pane" id="tab-payments">
+        <div class="section">
+          <div class="section-header">
+            <h3>Status Pembayaran</h3>
+            <div class="month-selector">
+              <button class="btn-icon-sm" id="btn-prev-month">‹</button>
+              <span id="current-month-label">–</span>
+              <button class="btn-icon-sm" id="btn-next-month">›</button>
+            </div>
+          </div>
+          <div id="payment-list" class="payment-list">
+            <div class="empty-state">
+              <div class="empty-icon">💳</div>
+              <p>Pilih grup terlebih dahulu</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTORY TAB -->
+      <div class="tab-pane" id="tab-history">
+        <div class="section">
+          <div class="section-header">
+            <h3>Riwayat Kocok</h3>
+          </div>
+          <div id="history-list" class="history-list">
+            <div class="empty-state">
+              <div class="empty-icon">📜</div>
+              <p>Belum ada riwayat kocok</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <!-- Modal Add Group -->
+  <div class="modal-overlay" id="modal-add-group">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Buat Grup Arisan Baru</h3>
+        <button class="modal-close" data-modal="modal-add-group">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nama Grup</label>
+          <input type="text" id="new-group-name" placeholder="Arisan RT 05..." />
+        </div>
+        <div class="form-group">
+          <label>Iuran per Bulan (Rp)</label>
+          <input type="number" id="new-group-amount" placeholder="500000" />
+        </div>
+        <div class="form-group">
+          <label>Tanggal Kocok (Hari ke-)</label>
+          <input type="number" id="new-group-draw-day" placeholder="25" min="1" max="28" />
+        </div>
+        <div class="form-group">
+          <label>Bulan Mulai</label>
+          <input type="month" id="new-group-start" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" data-modal="modal-add-group">Batal</button>
+        <button class="btn-primary" id="btn-save-group">Simpan Grup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Add Member -->
+  <div class="modal-overlay" id="modal-add-member">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Tambah Anggota</h3>
+        <button class="modal-close" data-modal="modal-add-member">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nama Anggota</label>
+          <input type="text" id="new-member-name" placeholder="Budi Santoso" />
+        </div>
+        <div class="form-group">
+          <label>No. WhatsApp / Telepon</label>
+          <input type="tel" id="new-member-phone" placeholder="08123456789" />
+        </div>
+        <div class="form-group">
+          <label>No. Urut (opsional)</label>
+          <input type="number" id="new-member-order" placeholder="Auto" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" data-modal="modal-add-member">Batal</button>
+        <button class="btn-primary" id="btn-save-member">Tambah Anggota</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Konfetti canvas -->
+  <canvas id="confetti-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;display:none;"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(()=>{});
+      });
+    }
+  </script>
+</body>
+</html>
